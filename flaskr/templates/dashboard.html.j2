@@ -1,0 +1,17 @@
+{%extends 'blank-page.html.j2'%}
+{% block title %}Dashboard{% endblock %}
+{% block pageheader_title%}Welcome to the WittyBot{%endblock%}
+{% block pageheader_items%}
+<li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Dashboard</a></li>
+{% endblock %}
+{% block body %}
+	{% if bots %}
+	<p>User has bots</p>
+	<!-- Display bots here -->
+	{% else %}
+		<h1 class="text-center">No bots found!! :(</h1>
+		<p class="text-center">Unfortunately you have not created any bots till now. Follow our guide to create bot for your organisation.</p>
+
+		<h2>Provide step by step guide here to create the bot. Will be updated in the future.</h2>
+	{% endif %}
+{% endblock %}

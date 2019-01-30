@@ -1,0 +1,24 @@
+{%extends 'blank-page.html.j2'%}
+{% block title %}My Bots{% endblock %}
+{% block pageheader_title%}My Bots{%endblock%}
+{% block pageheader_items%}
+<li class="breadcrumb-item"><a href="/dashboard" class="breadcrumb-link">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Mybots</a></li>
+{% endblock %}
+{% block body %}
+{% if bots %}
+<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+	<div class="card">
+		<div class="card-header">
+			Bot name
+		</div>
+		<div class="card-body">
+			<p class="card-text">Bot Description.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis voluptates deserunt eaque laudantium nihil, illum, fugit aliquam dolore non facilis, accusamus numquam culpa voluptatibus inventore earum ex temporibus magni facere!</p>
+			<a href="#" class="btn btn-primary">Go somewhere</a>
+		</div>
+	</div>
+</div>
+{% else %}
+{% endif %}
+{% endblock %}
