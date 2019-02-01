@@ -1,6 +1,8 @@
 wittybot/
 myfile1.py
 myfile2.py
+any.html
+flaskr/templates/renderfile.html
 *.pyc
 __pycache__/
 

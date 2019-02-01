@@ -6,7 +6,7 @@
 <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Mybots</a></li>
 {% endblock %}
 {% block body %}
-{% if bots %}
+{% if bots != 'None' %}
 <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
 	<div class="card">
 		<div class="card-header">
@@ -20,5 +20,13 @@
 	</div>
 </div>
 {% else %}
+<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+	<h1 class="text-center">No bots found!! :(</h1>
+		<p class="text-center">Unfortunately you have not created any bots till now. Follow our guide to create bot for your organisation.</p>
+		<p class="text-center">Create chatbot from here!</p>
+		<center>
+		<a href="/createbot" class="btn btn-primary">Create bot</a>
+		</center>
+</div>
 {% endif %}
 {% endblock %}
