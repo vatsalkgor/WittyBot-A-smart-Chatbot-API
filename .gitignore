@@ -1,5 +1,6 @@
 wittybot/
-
+myfile1.py
+myfile2.py
 *.pyc
 __pycache__/
 
