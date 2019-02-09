@@ -90,21 +90,15 @@ def create_app(test_config=None):
         if 'username' in session:
             return render_template('createbot.html.j2')
         return redirect('/')
+
     @app.route('/chatbot')
     def chatbot():
         if 'username' in session:
             return render_template('chatbot.html.j2')
         return redirect('/')
+        
     @app.route('/register')
     def register():
         return render_template('register.html.j2')
-
-    @app.route('/chatbot')
-    def chatbot():
-        resp = make_response(render_template('chatbot.html.j2'))
-        resp.headers['Cache-Control'] = "no-cache, no-store, must-revalidate"
-        resp.headers['Pragma'] = "no-cache"
-        resp.headers['Expires'] = "0"
-        return resp
         
     return app
