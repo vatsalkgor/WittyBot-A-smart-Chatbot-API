@@ -1,4 +1,5 @@
 wittybot/
+venv/
 myfile1.py
 myfile2.py
 *.pyc
