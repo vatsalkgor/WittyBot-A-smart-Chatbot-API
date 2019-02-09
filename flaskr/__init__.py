@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, url_for, render_template, request, redirect, session
+from flask import Flask, url_for, render_template, request, redirect, session, make_response
 
 
 def create_app(test_config=None):
@@ -27,7 +27,6 @@ def create_app(test_config=None):
     @app.route('/')
     def index():
         if 'username' in session:
-            
             return redirect('/dashboard')
         else:
             return render_template('login.html.j2')
@@ -83,7 +82,7 @@ def create_app(test_config=None):
     def mybots():
         if 'username' in session:
             # get the all created bots by user and send it to the dashboard
-            return render_template('mybots.html.j2', bots='None')
+            return render_template('mybots.html.j2', bots=None)
         return redirect('/')
 
     @app.route('/createbot')
@@ -95,4 +94,12 @@ def create_app(test_config=None):
     def register():
         return render_template('register.html.j2')
 
+    @app.route('/chatbot')
+    def chatbot():
+        resp = make_response(render_template('chatbot.html.j2'))
+        resp.headers['Cache-Control'] = "no-cache, no-store, must-revalidate"
+        resp.headers['Pragma'] = "no-cache"
+        resp.headers['Expires'] = "0"
+        return resp
+        
     return app
