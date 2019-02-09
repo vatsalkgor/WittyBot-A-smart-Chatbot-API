@@ -90,6 +90,11 @@ def create_app(test_config=None):
         if 'username' in session:
             return render_template('createbot.html.j2')
         return redirect('/')
+    @app.route('/chatbot')
+    def chatbot():
+        if 'username' in session:
+            return render_template('chatbot.html.j2')
+        return redirect('/')
     @app.route('/register')
     def register():
         return render_template('register.html.j2')
