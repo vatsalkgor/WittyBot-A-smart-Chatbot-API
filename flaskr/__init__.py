@@ -79,6 +79,10 @@ def create_app(test_config=None):
         session.pop('username')
         return redirect('/')
 
+    @app.route('/account-page')
+    def accountpage():
+    	return render_template('account-page.html.j2')
+  
     @app.route('/mybots')
     def mybots():
         if 'username' in session:
