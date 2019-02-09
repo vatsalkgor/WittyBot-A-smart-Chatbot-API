@@ -32,7 +32,7 @@
             <div class="card-header text-center"><!-- <a href="../index.html"><img class="logo-img" src="{{url_for('static',filename='images/logo1.png')}}" alt="logo"></a> --><a href="/" class="navbar-brand">Witty Bot</a><span class="splash-description">Please enter your user information.</span></div>
             <div class="card-body">
                 {% if error_msg %}
-                <div class="alert alert-danger">{{error_msg}}</div>
+                <div class="alert alert-danger">{{ error_msg }}</div>
                 {% endif %}
                 <form method="post" action="/login">
                     <div class="form-group">
