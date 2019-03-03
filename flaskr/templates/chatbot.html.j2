@@ -47,8 +47,8 @@
 					</div>
 					<div class="chat-form">
 						<div class="group">
-							<textarea class="text" rows="2"></textarea>
-							<label class="text_label">Type your message..</label>
+							<textarea class="text" id="chat_field" rows="2"></textarea>
+							<label class="text_label" for="chat_field">Type your message..</label>
 						</div>
 						<button type="button" class="btn btn-primary rounded-circle">
 						<i class="fa fa-paper-plane" aria-hidden="true" style="font-size: 30px;
@@ -62,6 +62,7 @@
 	<script src="{{url_for('static',filename='vendor/jquery/jquery-3.3.1.min.js')}}"></script>
 	<script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.js')}}"></script>
 	<script type="text/javascript">
+		//for dropdown 
 		$('.keep-open').on({
 		    "shown.bs.dropdown": function() { $(this).attr('closable', false); },
 		    //"click":             function() { }, // For some reason a click() is sent when Bootstrap tries and fails hide.bs.dropdown
@@ -73,12 +74,14 @@
 		  	$(".far.fa-comments").toggleClass("fas fa-times");
 		    $(this).parent().attr('closable', true ); }
 		})
-		// $("button").click(function(){
-		// $(".far.fa-comments").toggleClass("fas fa-times");
-		// });
-		$(".text").focusout(function(){
-			$(".text_label").css("display", "none");
-		});
+		// For label
+		$('#chat_field').keyup(function(){
+	      if($(this).val() == ''){  
+	       $('label[for="chat_field"]').show();
+	       }else{
+	         $('label[for="chat_field"]').hide();
+	      }
+	  	});
 			
 	</script>
 </html>
