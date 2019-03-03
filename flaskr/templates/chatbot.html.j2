@@ -11,9 +11,9 @@
 	</head>
 	<body>
 		{# dropup btn div #}
-		<div class="btn-group dropup" id="chat_group">
+		<div class="btn-group dropup keep-open" id="chat_group">
 			{# button for chatbot #}
-			<button type="button" id="chat_btn" class="btn btn-primary rounded-circle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="7,15">
+			<button type="button" role="button" id="chat_btn" class="btn btn-primary rounded-circle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="7,15">
 			<i class="far fa-comments" style="font-size: 30px;
 			padding: 5px"></i>
 			</button>
@@ -61,14 +61,24 @@
 	</body>
 	<script src="{{url_for('static',filename='vendor/jquery/jquery-3.3.1.min.js')}}"></script>
 	<script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.js')}}"></script>
-	{# <script type="text/javascript">
-		$("button").click(function(){
-		$("i").toggleClass("fas fa-times");
-		});
-	</script> #}
 	<script type="text/javascript">
-			$(".text").focusout(function(){
+		$('.keep-open').on({
+		    "shown.bs.dropdown": function() { $(this).attr('closable', false); },
+		    //"click":             function() { }, // For some reason a click() is sent when Bootstrap tries and fails hide.bs.dropdown
+		    "hide.bs.dropdown":  function() { return $(this).attr('closable') == 'true'; }
+		});
+
+		$('.keep-open').children().first().on({
+		  "click": function() {
+		  	$(".far.fa-comments").toggleClass("fas fa-times");
+		    $(this).parent().attr('closable', true ); }
+		})
+		// $("button").click(function(){
+		// $(".far.fa-comments").toggleClass("fas fa-times");
+		// });
+		$(".text").focusout(function(){
 			$(".text_label").css("display", "none");
-			});
+		});
+			
 	</script>
 </html>

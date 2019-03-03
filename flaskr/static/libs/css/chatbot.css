@@ -106,6 +106,7 @@
 /* -----FOR INPUT FIELD AND BUTTON----- */
 .group {
   position: relative;
+  padding-left: 5px;
 }
 
 .group_box{
