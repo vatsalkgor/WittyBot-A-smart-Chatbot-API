@@ -154,14 +154,8 @@
 .text:focus~.text_label {
   /*top: -20px;*/
   /*font-size: 14px;*/
-  color: #5264AE;
+  /*color: #5264AE;*/
   display: none;
-}
-
-.label_focus {
-  /*top: -20px;*/
-  /*font-size: 14px;*/
-  color: #5264AE;
 }
 
 .text:focus-within {

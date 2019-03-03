@@ -75,7 +75,7 @@
 		    $(this).parent().attr('closable', true ); }
 		})
 		// For label
-		$('#chat_field').keyup(function(){
+		$('#chat_field').focusout(function(){
 	      if($(this).val() == ''){  
 	       $('label[for="chat_field"]').show();
 	       }else{
