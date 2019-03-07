@@ -114,7 +114,7 @@ def create_app(test_config=None):
                         flash("Successfully registered.")
                         return redirect(url_for("login"))
                     else:
-                        render_template('register.html.j2',fail_msg="Password and Confirm Password does not match")
+                        return render_template('register.html.j2',fail_msg="Password and Confirm Password does not match")
                 else:
                     return render_template("register.html.j2",fail_msg="Choose a different username. ")
             else:
