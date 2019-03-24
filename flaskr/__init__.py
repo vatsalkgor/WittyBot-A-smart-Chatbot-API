@@ -1,47 +1,8 @@
-import os
-import hashlib
+import os, hashlib, aiml, json, time
 from flask import Flask, url_for, render_template, request, redirect, session, make_response,flash
 from flask_pymongo import PyMongo,ObjectId
 from werkzeug.utils import secure_filename
-
-def generateStartup(key):
-    startup = open("uploads/startups/"+key+"-startup.xml","w+")
-    startup_content = """
-<aiml version="1.0.1" encoding="UTF-8">
-    <!-- std-startup.xml -->
-
-    <!-- Category is an atomic AIML unit -->
-    <category>
-        <pattern>LOAD AIML B</pattern>
-        <template>
-            <learn>"""+key+""".aiml</learn>
-        </template>
-    </category>
-</aiml>
-    """
-    try:
-        startup.write(startup_content)
-        return True
-    except Exception as e:
-        return False
-
-
-def generateAIML(qf,af,key):
-    aiml_file = open("uploads/aiml/"+key+".aiml","w+")
-    aiml_start = """<aiml version="1.0.1" encoding="UTF-8">
-    <!-- basic_chat.aiml -->
-    """
-    for x,y in zip(qf,af):
-        x = x.strip()
-        y = y.strip()
-        aiml_start += """<category>
-                    <pattern>"""+x+ """</pattern>
-                    <template>"""+y+ """</template>
-                    </category>
-        """
-    aiml_start += "</aiml>"
-    aiml_file.write(aiml_start)
-    return True
+import helpers as h
 
 def create_app(test_config=None):
     # create and configure the app
@@ -51,6 +12,7 @@ def create_app(test_config=None):
     app.secret_key="!@#sdfjgh"
     mongo = PyMongo(app)
     user = mongo.db.wittybot_users
+    active_bots = {}
     # print((len(user)))
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -93,8 +55,8 @@ def create_app(test_config=None):
     def dashboard():
         if 'username' in session:
             # get the all created bots by user and send it to the dashboard
-
-            return render_template('dashboard.html.j2',bots=None,name=session['username'])
+            bots = user.find_one({"_id":ObjectId(session['uoid'])},{"chatbots":1,"_id":0})
+            return render_template('dashboard.html.j2',bots=bots,name=session['username'])
         else:
             return redirect('/')
 
@@ -108,21 +70,44 @@ def create_app(test_config=None):
     def mybots():
         if 'username' in session:
             # get the all created bots by user and send it to the dashboard
-            return render_template('mybots.html.j2', bots=None)
+            bots = user.find_one({"_id":ObjectId(session['uoid'])},{"chatbots":1,"_id":0})
+            print(type(bots['chatbots']))
+            return render_template('mybots.html.j2', bots=bots,name=session['username'])
         return redirect('/')
 
     @app.route('/createbot')
     def createbot():
         if 'username' in session:
-            return render_template('createbot.html.j2')
+            return render_template('createbot.html.j2',name=session['username'])
         return redirect('/')
 
-    @app.route('/chatbot')
-    def chatbot():
-        if 'username' in session:
-            return render_template('chatbot.html.j2')
-        return redirect('/')
-        
+    @app.route('/chatbot/<key>')
+    def chatbot(key):
+        bot_kernel = aiml.Kernel()
+        if  os.path.isfile("uploads/brn/"+key+".brn"):
+            bot_kernel.bootstrap(brainFile="uploads/brn/"+key+".brn")
+            if key not in active_bots:
+                active_bots[key] = bot_kernel
+        else:
+            bot_kernel.bootstrap(learnFiles = "uploads/startups/"+key+"-startup.xml", commands = "load aiml b");
+            bot_kernel.saveBrain("uploads/brn/"+key+".brn")
+            if key not in active_bots:
+                active_bots[key] = bot_kernel
+        return render_template('chatbot.html.j2',key=key)
+
+    @app.route('/chatbot/respond',methods=["POST"])
+    def respond():
+        if request.method=="POST":
+            response = active_bots[request.form['key']].respond(request.form['query'])
+            if response == '':
+                chat_history = {"request_ip":request.form['ip'],"query":request.form['query'],"timestamp":time.time(),"status":0,"response":"Currently I do not know that."}
+                user.update_one({"_id":ObjectId(session['uoid']),"chatbots.api_key":request.form['key']},{"$push":{"chat_history":chat_history}})
+                return json.dumps(chat_history)
+            else:
+                chat_history = {"request_ip":request.form['ip'],"query":request.form['query'],"status":1,"timestamp":time.time(),"response":response}
+                user.update_one({"_id":ObjectId(session['uoid']),"chatbots.api_key":request.form['key']},{"$push":{"chatbots.$.chat_history":chat_history}})
+                return json.dumps(chat_history)
+
     @app.route('/register',methods=["GET","POST"])
     def register():
         if request.method == "POST":
@@ -145,6 +130,7 @@ def create_app(test_config=None):
                 return render_template("register.html.j2",fail_msg="User already registered.")
         else:
             return render_template('register.html.j2')
+
     @app.route("/createBot",methods=["POST"])
     def createBot():
         if request.method=="POST":
@@ -167,9 +153,9 @@ def create_app(test_config=None):
                 questionfile = open(app.config["UPLOAD_TEXT"] + qf_filename)
                 answerfile = open(app.config["UPLOAD_TEXT"] + af_filename)
                 
-                isAIMLgenerated = generateAIML(questionfile,answerfile,api_key)
+                isAIMLgenerated = h.generateAIML(questionfile,answerfile,api_key)
                 if isAIMLgenerated:
-                    isXMLgenerated = generateStartup(api_key)
+                    isXMLgenerated = h.generateStartup(api_key)
 
                 chatbot_new = {
                     "bot_name":request.form['bot_name'],
@@ -179,10 +165,11 @@ def create_app(test_config=None):
                 }
                 user.update_one({"_id":ObjectId(session['uoid'])},
                             {"$push":{"chatbots":chatbot_new}})
-
-                return "created"
+                flash("Bot " + request.form['bot_name'] + " created. ")
+                return redirect("mybots")
             else:
                 return "no files"
         else:
             return "no post"
+
     return app

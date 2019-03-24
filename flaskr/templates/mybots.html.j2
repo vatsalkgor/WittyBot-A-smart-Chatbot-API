@@ -7,18 +7,26 @@
 {% endblock %}
 {% block body %}
 {% if bots %}
-<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-	<div class="card">
-		<div class="card-header">
-			Bot name
-		</div>
-		<div class="card-body">
-			<p class="card-text">Bot Description.</p>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis voluptates deserunt eaque laudantium nihil, illum, fugit aliquam dolore non facilis, accusamus numquam culpa voluptatibus inventore earum ex temporibus magni facere!</p>
-			<a href="#" class="btn btn-primary">Go somewhere</a>
+{% for bot in bots['chatbots'] %}
+{% if loop.index % 4 == 0 or loop.index == 1 %}
+<div class="row">
+	{% endif %}
+	<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+		<div class="card">
+			<div class="card-header">
+				{{bot.bot_name}}
+			</div>
+			<div class="card-body">
+				<p class="card-text">Bot Description.</p>
+				<p>{{bot.bot_desc}}</p>
+				<a href="http://localhost:5000/chatbot/{{bot.api_key}}" class="btn btn-primary">Test {{bot.bot_name}}</a>
+			</div>
 		</div>
 	</div>
+	{% if loop.index % 4 == 0 %}
 </div>
+{% endif %}
+{% endfor %}
 {% else %}
 {% endif %}
 {% endblock %}

@@ -8,7 +8,7 @@ def generateStartup(key):
     <category>
         <pattern>LOAD AIML B</pattern>
         <template>
-            <learn>"""+key+""".aiml</learn>
+            <learn>uploads/aiml/"""+key+""".aiml</learn>
         </template>
     </category>
 </aiml>
@@ -26,7 +26,7 @@ def generateAIML(qf,af,key):
     <!-- basic_chat.aiml -->
     """
     for x,y in zip(qf,af):
-        x = x.strip()
+        x = x.strip().replace('?','').replace('.','').upper()
         y = y.strip()
         aiml_start += """<category>
                     <pattern>"""+x+ """</pattern>
