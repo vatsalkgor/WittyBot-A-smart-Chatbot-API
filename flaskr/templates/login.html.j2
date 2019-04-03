@@ -34,6 +34,11 @@
                 {% if error_msg %}
                 <div class="alert alert-danger">{{ error_msg }}</div>
                 {% endif %}
+                {% with success_msg = get_flashed_messages() %}
+                {% if success_msg %}
+                <div class="alert alert-success">{{ success_msg }}</div>
+                {% endif %}
+                {% endwith %}
                 <form method="post" action="/login">
                     <div class="form-group">
                         <input class="form-control form-control-lg" name="username" required="" id="username" type="text" placeholder="Username" autocomplete="off">

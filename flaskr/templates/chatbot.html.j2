@@ -1,74 +1,101 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<title>bot</title>
-		<link rel="stylesheet" href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}">
-		<link rel="stylesheet" href="{{ url_for('static',filename='vendor/fonts/fontawesome/css/fontawesome-all.css')}}">
-		<link rel="stylesheet" href="{{ url_for('static',filename='libs/css/chatbot.css')}}">
-		
-	</head>
-	<body>
-		{# dropup btn div #}
-		<div class="btn-group dropup" id="chat_group">
-			{# button for chatbot #}
-			<button type="button" id="chat_btn" class="btn btn-primary rounded-circle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="7,15">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>bot</title>
+	<link rel="stylesheet" href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static',filename='vendor/fonts/fontawesome/css/fontawesome-all.css')}}">
+	<link rel="stylesheet" href="{{ url_for('static',filename='libs/css/chatbot.css')}}">
+
+</head>
+<body>
+	{# dropup btn div #}
+	<div class="btn-group dropup keep-open" id="chat_group">
+		{# button for chatbot #}
+		<button type="button" role="button" id="chat_btn" class="btn btn-primary rounded-circle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="7,15">
 			<i class="far fa-comments" style="font-size: 30px;
 			padding: 5px"></i>
-			</button>
-			<div class="triangle-down"></div>
-			{# button-end #}
-			<div class="dropdown-menu chatbox" aria-labelledby="chat_btn">
-				<div class="">
-					<div class="chatlogs">
-						<div class="chat friend">
-							<div class="user-photo"></div>
-							<p class="chat-message">What's up, Brother ..!!</p>
-						</div>
-						<div class="chat friend">
-							<div class="user-photo"></div>
-							<p class="chat-message">What's up, Brother ..!!</p>
-						</div>
-						<div class="chat self">
-							<div class="user-photo"></div>
-							<p class="chat-message">What's up ..!!</p>
-						</div>
-						<div class="chat self">
-							<div class="user-photo"></div>
-							<p class="chat-message">A única área que eu acho, que vai exigir muita atenção nossa, e aí eu já aventei a hipótese de até criar um ministério. É na área de... Na área... Eu diria assim, como uma espécie de analogia com o que acontece na área agrícola.</p>
-						</div>
-						<div class="chat friend">
-							<div class="user-photo"></div>
-							<p class="chat-message">No meu xinélo da humildade eu gostaria muito de ver o Neymar e o Ganso. Por que eu acho que.... 11 entre 10 brasileiros gostariam. Você veja, eu já vi, parei de ver. Voltei a ver, e acho que o Neymar e o Ganso têm essa capacidade de fazer a gente olhar.
-								
-							</p>
-						</div>
+		</button>
+		<div class="triangle-down"></div>
+		{# button-end #}
+		<div class="dropdown-menu chatbox" aria-labelledby="chat_btn">
+			<div class="">
+				<div class="chatlogs">
+					<div class="chat friend">
+						<div class="user-photo"></div>
+						<p class="chat-message">Hi There, How can I help you??</p>
 					</div>
-					<div class="chat-form">
-						<div class="group">
-							<textarea class="text" rows="2"></textarea>
-							<label class="text_label">Type your message..</label>
-						</div>
-						<button type="button" class="btn btn-primary rounded-circle">
+					{# <div class="chat self">
+						<div class="user-photo"></div>
+						<p class="chat-message">Hi There, How can I help you??</p>
+					</div> #}
+				</div>
+				<div class="chat-form">
+					<div class="group">
+						<textarea class="text" id="chat_field" rows="2"></textarea>
+						<label class="text_label" for="chat_field">Type your message..</label>
+					</div>
+					<button type="button" class="btn btn-primary rounded-circle">
 						<i class="fa fa-paper-plane" aria-hidden="true" style="font-size: 30px;
 						"></i>
-						</button>
-					</div>
+					</button>
 				</div>
 			</div>
-		</div> {# end div dropup #}
-	</body>
-	<script src="{{url_for('static',filename='vendor/jquery/jquery-3.3.1.min.js')}}"></script>
-	<script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.js')}}"></script>
-	{# <script type="text/javascript">
-		$("button").click(function(){
-		$("i").toggleClass("fas fa-times");
+		</div>
+	</div> {# end div dropup #}
+</body>
+<script src="{{url_for('static',filename='vendor/jquery/jquery-3.3.1.min.js')}}"></script>
+<script src="{{url_for('static',filename='vendor/bootstrap/js/bootstrap.bundle.js')}}"></script>
+<script type="text/javascript">
+		//for dropdown 
+		$('.keep-open').on({
+			"shown.bs.dropdown": function() { $(this).attr('closable', false); },
+		    //"click":             function() { }, // For some reason a click() is sent when Bootstrap tries and fails hide.bs.dropdown
+		    "hide.bs.dropdown":  function() { return $(this).attr('closable') == 'true'; }
 		});
-	</script> #}
-	<script type="text/javascript">
-			$(".text").focusout(function(){
-			$(".text_label").css("display", "none");
-			});
+
+		$('.keep-open').children().first().on({
+			"click": function() {
+				$(".far.fa-comments").toggleClass("fas fa-times");
+				$(this).parent().attr('closable', true ); }
+			})
+		// For label
+		$('#chat_field').focusout(function(){
+			if($(this).val() == ''){  
+				$('label[for="chat_field"]').show();
+			}else{
+				$('label[for="chat_field"]').hide();
+			}
+		});
+		$(document).ready(function(){
+			var ip;
+			$.getJSON("https://api.ipify.org?format=jsonp&callback=?",
+				function(json) {
+					ip = json.ip
+				});
+			$("#chat_field").keypress(function(e){
+				var query = $(this).val().trim();
+				if(e.which == 13 && query != ''){
+					e.preventDefault()	
+					// console.log($(this).val() == '')
+					var str = "<div class='chat self'><div class=user-photo></div><p class=chat-message>"+query+"</p></div>"
+					$(".chatlogs").append(str);
+					$(this).val('')
+					//send post request to the server for response
+					$.ajax({
+						url:"/chatbot/respond",
+						method:"POST",
+						data:{key:"{{key}}",query:query,ip:ip},
+						success:function(response){
+							data = jQuery.parseJSON(response)
+							var resp = "<div class='chat friend'><div class=user-photo></div><p class=chat-message>"+data['response']+"</p></div>"
+							$(".chatlogs").append(resp)
+						}
+					})
+				}
+			})
+		})
+
 	</script>
-</html>
+	</html>
