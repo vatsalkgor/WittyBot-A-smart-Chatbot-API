@@ -68,14 +68,14 @@ def create_app(test_config=None):
 
     @app.route('/account-page')
     def accountpage():
-    	return render_template('account-page.html.j2')
+    	return render_template('account-page.html.j2',name=session['username'])
   
     @app.route('/mybots')
     def mybots():
         if 'username' in session:
             # get the all created bots by user and send it to the dashboard
             bots = user.find_one({"_id":ObjectId(session['uoid'])},{"chatbots":1,"_id":0})
-            print(type(bots['chatbots']))
+            # print(type(bots['chatbots']))
             return render_template('mybots.html.j2', bots=bots,name=session['username'])
         return redirect('/')
 
