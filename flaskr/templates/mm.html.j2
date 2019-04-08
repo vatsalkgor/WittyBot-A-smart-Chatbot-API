@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+{%extends 'blank-page.html.j2'%}
+{%block title %}Misfire Management{% endblock %}
+{% block pageheader_title%}Misfire information{%endblock%}
+{% block pageheader_items%}
+<li class="breadcrumb-item"><a href="/dashboard" class="breadcrumb-link">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Misfire Management</a></li>
+{% endblock %}
+{% block body %}
+{% if bots %}
+{% for bot in bots['chatbots'] %}
+{% if loop.index % 4 == 0 or loop.index == 1 %}
+<div class="row">
+	{% endif %}
+	<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+		<div class="card">
+			<div class="card-header">
+				{{bot.bot_name}}
+			</div>
+			<div class="card-body">
+				<p class="card-text">Misfires Occured:</p>
+					{%set mis_count= [0] %}
+					{% for hist in bot.chat_history%}
+						{% if hist.status%}
+							{# {{hist.query+" "+hist.request_ip+"\n"}}<br/> #}
+							{% if mis_count.append(mis_count.pop() + 1) %}{%endif%}
+						{% endif %}
+
+					{%endfor%}
+				{% if mis_count != [0] %}
+					<p class="text-danger">
+				{% else %}
+					<p class="text-success">
+				{% endif %}
+					{{mis_count.pop()}}
+				</p>
+				<a href="http://localhost:5000/manage-misfires/{{ bot.api_key }}" class="btn btn-danger">Handle</a>
+			</div>
+		</div>
+	</div>
+	{% if loop.index % 4 == 0 %}
+</div>
+{% endif %}
+{% endfor %}
+{% else %}
+<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+	<h1 class="text-center">No bots found!! :(</h1>
+		<p class="text-center">Unfortunately you have not created any bots till now. Follow our guide to create bot for your organisation.</p>
+		<p class="text-center">Create chatbot from here!</p>
+		<center>
+		<a href="/createbot" class="btn btn-primary">Create bot</a>
+		</center>
+</div>
+{% endif %}
+{% endblock %}

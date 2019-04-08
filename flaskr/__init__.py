@@ -1,4 +1,4 @@
-import os, hashlib, aiml, json, time
+import os, hashlib, aiml, json, time, collections
 from flask import Flask, url_for, render_template, request, redirect, session, make_response,flash
 from flask_pymongo import PyMongo,ObjectId
 from werkzeug.utils import secure_filename
@@ -112,6 +112,25 @@ def create_app(test_config=None):
                 user.update_one({"_id":ObjectId(session['uoid']),"chatbots.api_key":request.form['key']},{"$push":{"chatbots.$.chat_history":chat_history}})
                 return json.dumps(chat_history)
 
+    @app.route('/mm')
+    def mm():
+        # my inital thought of mm is that we would first create cards of each bot.
+        # then each card will have the only the count of misfires occured.
+        # a button 'handle' would be there to handle the misfires.
+        # clicking that it would create cards differentiating the chats by IP address of the conversations
+        # and user will reply the query which has the status as 0
+        # and that text reply would then be put as a respone in that instance of the bot.
+        # now, That query and it's response would be added in the text files of user .
+        # and status woulbe turned to 0
+        if 'username' in session:
+            bots = user.find_one({"_id":ObjectId(session['uoid'])},{"chatbots":1,"_id":0})
+            return render_template('mm.html.j2',bots=bots,username=session['username'])
+        return render_template('/')
+
+
+
+
+        
     @app.route('/register',methods=["GET","POST"])
     def register():
         if request.method == "POST":
@@ -141,6 +160,7 @@ def create_app(test_config=None):
             print(request.form)
             print(request.files)
             if 'question_file' in request.files and 'answer_file' in request.files:
+                print("in if")
                 api_key = session['uoid'] + hashlib.md5(request.form['bot_name'].encode()).hexdigest()
 
                 qf = request.files['question_file']
