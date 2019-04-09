@@ -9,40 +9,26 @@
 {% endblock %}
 {% block body %}
 {% if bots %}
-{% for bot in bots['chatbots'] %}
-{% if loop.index % 4 == 0 or loop.index == 1 %}
 <div class="row">
-	{% endif %}
 	<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-		<div class="card">
-			<div class="card-header">
-				{{bot.bot_name}}
-			</div>
-			<div class="card-body">
-				<p class="card-text">Misfires Occured:</p>
-					{%set mis_count= [0] %}
-					{% for hist in bot.chat_history%}
-						{% if hist.status%}
-							{# {{hist.query+" "+hist.request_ip+"\n"}}<br/> #}
-							{% if mis_count.append(mis_count.pop() + 1) %}{%endif%}
-						{% endif %}
-
-					{%endfor%}
-				{% if mis_count != [0] %}
-					<p class="text-danger">
-				{% else %}
-					<p class="text-success">
-				{% endif %}
-					{{mis_count.pop()}}
-				</p>
-				<a href="http://localhost:5000/manage-misfires/{{ bot.api_key }}" class="btn btn-danger">Handle</a>
-			</div>
-		</div>
+		Select Bot Name: <select class="form-control" id="select-bot">
+			<option>----select bot-----</option>
+		{% for bot in bots['chatbots'] %}
+				<option value="{{bot.api_key}}">{{bot.bot_name}}</option>
+		{% endfor %}
+			</select>
 	</div>
-	{% if loop.index % 4 == 0 %}
 </div>
-{% endif %}
-{% endfor %}
+<div class="row">
+		<div id="responseDiv" class="table table-bordered">
+			<table id="answerTable">	
+				<th>Request Ip</th>
+				<th>Request Date&Time</th>
+				<th>Request Query</th>
+				<th>Suggest Response</th>
+			</table>
+		</div>
+</div>
 {% else %}
 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 	<h1 class="text-center">No bots found!! :(</h1>
@@ -54,3 +40,43 @@
 </div>
 {% endif %}
 {% endblock %}
+{% block script %}
+<script>
+	$(document).ready(function(){
+		$("#select-bot").change(function(e){
+			e.preventDefault();
+			$.ajax({
+				url:"/getmisseddata/"+$(this).val(),
+				method:"post",
+				success:function(response){
+					response = jQuery.parseJSON(response);
+					console.log(response);
+					console.log(new Date(parseInt(response[0]['timestamp'])*1000));
+					for(i=0;i<response.length;i++){
+						console.log(response[i])
+						$('#answerTable').html('<tr><td>'+response[i]["request_ip"]+'</td><td>'+ new Date(parseInt(response[i]['timestamp'])*1000)+'</td><td id=query'+response[i]['timestamp']+'>'+response[i]['query']+'</td><td><input type="text" id=input'+response[i]['timestamp']+'></input></td><td><input type="button" class="btn btn-success click" id='+response[i]['timestamp']+'  value="submit"></input></td></tr>')
+					}
+				}
+			})
+			$("#answerTable").on('click','.click',function(e){
+				console.log($(this).attr('id'));
+				console.log($('#select-bot').val());
+				// console.log($("#query"+$(this).attr('id')));
+				var query_id = "#query"+$(this).attr('id');
+				var input_id = "#input"+$(this).attr('id');
+				// console.log($(query_id));
+				$.ajax({
+					url:"/manageMisfire",
+					data:{key:$("#select-bot").val(),query:$(query_id).html(),template:$(input_id).val()},
+					method:"POST",
+					success:function(response){
+						console.log(response);
+					}
+				})
+			})
+		})
+	})
+
+
+</script>
+{%endblock%}

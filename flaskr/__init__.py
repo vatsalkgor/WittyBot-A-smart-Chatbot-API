@@ -104,12 +104,12 @@ def create_app(test_config=None):
         if request.method=="POST":
             response = active_bots[request.form['key']].respond(request.form['query'])
             if response == '':
-                chat_history = {"request_ip":request.form['ip'],"query":request.form['query'],"timestamp":time.time(),"status":0,"response":"Currently I do not know that."}
-                user.update_one({"_id":ObjectId(session['uoid']),"chatbots.api_key":request.form['key']},{"$push":{"chat_history":chat_history}})
+                chat_history = {"request_ip":request.form['ip'],"query":request.form['query'],"timestamp":time.time(),"status":False,"response":"Currently I do not know that."}
+                user.update_one({"chatbots.api_key":request.form['key']},{"$push":{"chatbots.$.chat_history":chat_history}})
                 return json.dumps(chat_history)
             else:
-                chat_history = {"request_ip":request.form['ip'],"query":request.form['query'],"status":1,"timestamp":time.time(),"response":response}
-                user.update_one({"_id":ObjectId(session['uoid']),"chatbots.api_key":request.form['key']},{"$push":{"chatbots.$.chat_history":chat_history}})
+                chat_history = {"request_ip":request.form['ip'],"query":request.form['query'],"status":True,"timestamp":time.time(),"response":response}
+                user.update_one({"chatbots.api_key":request.form['key']},{"$push":{"chatbots.$.chat_history":chat_history}})
                 return json.dumps(chat_history)
 
     @app.route('/mm')
@@ -124,12 +124,42 @@ def create_app(test_config=None):
         # and status woulbe turned to 0
         if 'username' in session:
             bots = user.find_one({"_id":ObjectId(session['uoid'])},{"chatbots":1,"_id":0})
-            return render_template('mm.html.j2',bots=bots,username=session['username'])
+            return render_template('mm.html.j2',bots=bots,name=session['username'])
         return render_template('/')
 
+    @app.route('/getmisseddata/<key>',methods=["GET","POST"])
+    def getmisseddata(key):
+        if 'username' in session:
+            answers= []
+            missed_data = list(user.find({"chatbots.api_key":key},{"chatbots":1,"_id":0}))           
+            # print(missed_data[0]['chatbots'])
+            length = len(missed_data[0]['chatbots'])
+            for i in range(0,length):
+                if missed_data[0]['chatbots'][i]['api_key']==key:
+                    md = missed_data[0]['chatbots'][i]['chat_history']
+                    # print(len(md))
+                    length1 = len(md)
+                    for j in range(length1):
+                        # print(md[j])
+                        if md[j]['status']==False:
+                            answers.append(md[j])
+            # for md in missed_data[0]['chatbots']:
 
+                # source_ip, time, query, response: input,submit;
+            return json.dumps(answers)
 
-
+    @app.route('/manageMisfire',methods=['GET','POST'])
+    def manageMisfire():
+        if 'username' in session:
+            file_lines = open("uploads/aiml/"+request.form['key']+".aiml","r").readlines()
+            print(file_lines)
+            del file_lines[-1]
+            aiml = "<category><pattern>"
+            aiml += request.form['query'] +"</pattern><template>"
+            aiml += request.form['template'] + "</template></category></aiml>"
+            file_lines += aiml 
+            return file_lines
+            
         
     @app.route('/register',methods=["GET","POST"])
     def register():
