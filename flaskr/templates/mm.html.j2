@@ -26,6 +26,7 @@
 				<th>Request Date&Time</th>
 				<th>Request Query</th>
 				<th>Suggest Response</th>
+				<tbody id="answerBody"></tbody>
 			</table>
 		</div>
 </div>
@@ -50,24 +51,23 @@
 				method:"post",
 				success:function(response){
 					response = jQuery.parseJSON(response);
-					console.log(response);
-					console.log(new Date(parseInt(response[0]['timestamp'])*1000));
+					var str = "";
 					for(i=0;i<response.length;i++){
-						console.log(response[i])
-						$('#answerTable').html('<tr><td>'+response[i]["request_ip"]+'</td><td>'+ new Date(parseInt(response[i]['timestamp'])*1000)+'</td><td id=query'+response[i]['timestamp']+'>'+response[i]['query']+'</td><td><input type="text" id=input'+response[i]['timestamp']+'></input></td><td><input type="button" class="btn btn-success click" id='+response[i]['timestamp']+'  value="submit"></input></td></tr>')
+						str += '<tr><td>'+response[i]["request_ip"]+'</td><td>'+ new Date(parseInt(response[i]['timestamp'])*1000)+'</td><td id=query'+response[i]['timestamp']+'>'+response[i]['query']+'</td><td><input name="input" type="text" id="input"></input></td><td><input type="button" class="btn btn-success click" id=button'+response[i]['timestamp']+'  value="submit"></input></td></tr>'
 					}
+					$("#answerBody").html(str);
 				}
 			})
 			$("#answerTable").on('click','.click',function(e){
-				console.log($(this).attr('id'));
-				console.log($('#select-bot').val());
-				// console.log($("#query"+$(this).attr('id')));
-				var query_id = "#query"+$(this).attr('id');
-				var input_id = "#input"+$(this).attr('id');
-				// console.log($(query_id));
+				// console.log($('#select-bot').val());
+				// console.log($("#input"+$(this).attr('id')).text());
+				var query = $("#answerBody").find('td')[2].innerHTML;
+				var input = $("#answerBody").find("#input").val();
+				console.log(input)
+				// var query = $("#answerBody").find('td')[3].innerHTML;
 				$.ajax({
 					url:"/manageMisfire",
-					data:{key:$("#select-bot").val(),query:$(query_id).html(),template:$(input_id).val()},
+					data:{key:$("#select-bot").val(),query:query,template:input},
 					method:"POST",
 					success:function(response){
 						console.log(response);

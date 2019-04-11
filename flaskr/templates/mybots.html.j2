@@ -6,20 +6,22 @@
 <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Mybots</a></li>
 {% endblock %}
 {% block body %}
-{% if bots %}
+{% if bots.chatbots %}
 {% for bot in bots['chatbots'] %}
 {% if loop.index % 4 == 0 or loop.index == 1 %}
 <div class="row">
 	{% endif %}
 	<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-		<div class="card">
-			<div class="card-header">
-				{{bot.bot_name}}
-			</div>
+		<div class="card card-chatbot">
+				<div class="card-header" style="border-radius: 5px 5px 0px 0px;background: #f6f6ff">
+					{{bot.bot_name}}
+				</div>
 			<div class="card-body">
 				<p class="card-text">Bot Description.</p>
 				<p>{{bot.bot_desc}}</p>
-				<a href="http://localhost:5000/chatbot/{{bot.api_key}}" class="btn btn-primary">Test {{bot.bot_name}}</a>
+			</div>
+			<div class="card-footer" style="border-radius: 0px 0px 5px 5px">
+				<a href="http://localhost:5000/chatbot/{{bot.api_key}}" class="btn btn-primary float-right">	Test {{bot.bot_name}}</a>
 			</div>
 		</div>
 	</div>

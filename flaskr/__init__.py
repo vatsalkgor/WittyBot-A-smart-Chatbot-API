@@ -151,14 +151,33 @@ def create_app(test_config=None):
     @app.route('/manageMisfire',methods=['GET','POST'])
     def manageMisfire():
         if 'username' in session:
-            file_lines = open("uploads/aiml/"+request.form['key']+".aiml","r").readlines()
-            print(file_lines)
+            file_lines_file = open("uploads/aiml/"+request.form['key']+".aiml","r")
+            file_lines = file_lines_file.readlines()
             del file_lines[-1]
+            print(request.form['query'])
+            print(request.form['template'])
+            new_lines = ""
             aiml = "<category><pattern>"
             aiml += request.form['query'] +"</pattern><template>"
             aiml += request.form['template'] + "</template></category></aiml>"
-            file_lines += aiml 
-            return file_lines
+            aiml = str(aiml);
+            for line in file_lines:
+                new_lines+=line
+            # print(file_lines)
+            new_lines += aiml
+            file_lines_file.close();
+            final_file = open("uploads/aiml/"+request.form['key']+".aiml",'w')
+            final_file.write(new_lines);
+            final_file.close();
+            os.remove("uploads/brn/"+request.form['key']+".brn")
+            # bot_kernel = aiml.Kernel()
+            # bot_kernel.bootstrap(learnFiles = "uploads/startups/"+key+"-startup.xml", commands = "load aiml b");
+            # bot_kernel.saveBrain("uploads/brn/"+key+".brn")
+            # if key not in active_bots:
+            #     active_bots[key] = bot_kernel
+            # return render_template('chatbot.html.j2',key=key)
+            # # request.form['key'].respond("load aiml b")
+            return "True"
             
         
     @app.route('/register',methods=["GET","POST"])

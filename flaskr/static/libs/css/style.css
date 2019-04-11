@@ -237,7 +237,12 @@ ul li {}
     font-weight: 300;
     color: #3d3f5d;
 }
-
+/*---------------------------------------
+    For fixed card length of mybots page.
+-----------------------------------------*/
+.card-chatbot{
+    height: 300px;
+}
 
 /*-------------------- 
  Form
