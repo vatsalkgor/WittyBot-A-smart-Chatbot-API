@@ -53,7 +53,7 @@
 					response = jQuery.parseJSON(response);
 					var str = "";
 					for(i=0;i<response.length;i++){
-						str += '<tr><td>'+response[i]["request_ip"]+'</td><td>'+ new Date(parseInt(response[i]['timestamp'])*1000)+'</td><td id=query'+response[i]['timestamp']+'>'+response[i]['query']+'</td><td><input name="input" type="text" id="input"></input></td><td><input type="button" class="btn btn-success click" id=button'+response[i]['timestamp']+'  value="submit"></input></td></tr>'
+						str += '<tr><td>'+response[i]["request_ip"]+'</td><td>'+ new Date(parseInt(response[i]['timestamp'])*1000)+'</td><td id=query'+response[i]['timestamp']+'>'+response[i]['query']+'</td><td><input name="input"'+response[i]['timestamp']+' type="text" id="input"></input></td><td><input type="button" class="btn btn-success click" id=button'+response[i]['timestamp']+'  value="submit"></input></td></tr>'
 					}
 					$("#answerBody").html(str);
 				}
@@ -62,8 +62,9 @@
 				// console.log($('#select-bot').val());
 				// console.log($("#input"+$(this).attr('id')).text());
 				var query = $("#answerBody").find('td')[2].innerHTML;
+				console.log(query);
 				var input = $("#answerBody").find("#input").val();
-				console.log(input)
+				console.log(input);
 				// var query = $("#answerBody").find('td')[3].innerHTML;
 				$.ajax({
 					url:"/manageMisfire",
@@ -71,6 +72,9 @@
 					method:"POST",
 					success:function(response){
 						console.log(response);
+						if(response){
+							alert("changes done successfully!");
+						}
 					}
 				})
 			})

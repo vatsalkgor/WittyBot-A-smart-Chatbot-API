@@ -183,6 +183,7 @@ def create_app(test_config=None):
                 key_this = request.form['key']
                 active_bots[key_this] = bot_kernel
             bot_kernel.respond("load aiml b") 
+            
             return "True"
             
         
