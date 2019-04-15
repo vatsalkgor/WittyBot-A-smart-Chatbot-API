@@ -1,4 +1,4 @@
-import os, hashlib, aiml, json, time, collections
+import os, hashlib, aiml, json, time, collections, re
 from flask import Flask, url_for, render_template, request, redirect, session, make_response,flash
 from flask_pymongo import PyMongo,ObjectId
 from werkzeug.utils import secure_filename
@@ -154,29 +154,35 @@ def create_app(test_config=None):
             file_lines_file = open("uploads/aiml/"+request.form['key']+".aiml","r")
             file_lines = file_lines_file.readlines()
             del file_lines[-1]
-            print(request.form['query'])
-            print(request.form['template'])
+            # print(request.form['query'])
+            # print(request.form['template'])
+            final_query = re.sub(r"[^a-zA-Z0-9]+"," ",request.form['query'])
+            final_query = final_query.rstrip(" ")
+            # print(final_query)
             new_lines = ""
-            aiml = "<category><pattern>"
-            aiml += request.form['query'] +"</pattern><template>"
-            aiml += request.form['template'] + "</template></category></aiml>"
-            aiml = str(aiml);
+            aiml_string = "\t\t<category>\n\t\t\t<pattern>"
+            aiml_string +=  final_query.upper()+"</pattern>\n\t\t\t<template>"
+            aiml_string += request.form['template'] + "</template>\n\t\t</category>\n</aiml>"
+            aiml_string = str(aiml_string);
             for line in file_lines:
                 new_lines+=line
             # print(file_lines)
-            new_lines += aiml
+            new_lines += aiml_string
+            print(new_lines)
             file_lines_file.close();
             final_file = open("uploads/aiml/"+request.form['key']+".aiml",'w')
-            final_file.write(new_lines);
-            final_file.close();
+            final_file.write(new_lines)
+            print("\n Written the in the file")
+            final_file.close()
             os.remove("uploads/brn/"+request.form['key']+".brn")
-            # bot_kernel = aiml.Kernel()
-            # bot_kernel.bootstrap(learnFiles = "uploads/startups/"+key+"-startup.xml", commands = "load aiml b");
-            # bot_kernel.saveBrain("uploads/brn/"+key+".brn")
-            # if key not in active_bots:
-            #     active_bots[key] = bot_kernel
-            # return render_template('chatbot.html.j2',key=key)
-            # # request.form['key'].respond("load aiml b")
+            bot_kernel = aiml.Kernel()
+            bot_kernel.bootstrap(learnFiles = "uploads/startups/"+request.form['key']+"-startup.xml", commands = "load aiml b");
+            print("before Save brain")
+            bot_kernel.saveBrain("uploads/brn/"+request.form['key']+".brn")
+            if request.form['key'] not in active_bots:
+                key_this = request.form['key']
+                active_bots[key_this] = bot_kernel
+            bot_kernel.respond("load aiml b") 
             return "True"
             
         

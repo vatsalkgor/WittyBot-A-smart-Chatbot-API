@@ -15,6 +15,7 @@ def generateStartup(key):
     """
     try:
         startup.write(startup_content)
+        startup.close()
         return True
     except Exception as e:
         return False
@@ -35,4 +36,5 @@ def generateAIML(qf,af,key):
         """
     aiml_start += "</aiml>"
     aiml_file.write(aiml_start)
+    aiml_file.close()
     return True
